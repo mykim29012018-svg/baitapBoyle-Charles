@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bài tập Boyle – Charles · Vật lí 12</title>
+<style>
+:root{
+  --bg:#f5f6f8;--card:#fff;--ink:#1c2230;--muted:#5d667a;--line:#dde1ea;
+  --blue:#1f4e9c;--red:#c0392b;--ok:#1b8a4b;--okbg:#e6f5ec;--bad:#c0392b;--badbg:#fbeae8;--mid:#b9770e;--midbg:#fdf3e0;
+  --accent:#1f4e9c;--accentbg:#e8eefa;--grid:#8a93a6;--shadow:0 1px 2px rgba(20,30,60,.06),0 6px 20px rgba(20,30,60,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151c;--card:#1b2030;--ink:#e8ebf3;--muted:#9aa4ba;--line:#2e3549;
+    --blue:#7fb0ff;--red:#ff8f80;--ok:#5fd08f;--okbg:#17301f;--bad:#ff8f80;--badbg:#3a1d1d;--mid:#f0b95c;--midbg:#3a2f18;
+    --accent:#7fb0ff;--accentbg:#1f2a44;--grid:#7d869b;--shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151c;--card:#1b2030;--ink:#e8ebf3;--muted:#9aa4ba;--line:#2e3549;
+  --blue:#7fb0ff;--red:#ff8f80;--ok:#5fd08f;--okbg:#17301f;--bad:#ff8f80;--badbg:#3a1d1d;--mid:#f0b95c;--midbg:#3a2f18;
+  --accent:#7fb0ff;--accentbg:#1f2a44;--grid:#7d869b;--shadow:none;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 70px}
+.hide{display:none!important}
+header.hero{padding:28px 0 6px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.hero h1{margin:0 0 2px;font-size:clamp(1.4rem,4vw,1.9rem);line-height:1.2}
+.hero p{margin:0;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0;box-shadow:var(--shadow)}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 16px;border-radius:10px;cursor:pointer;font:inherit;font-size:.95rem}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{padding:6px 10px;font-size:.88rem}
+.fields{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0}
+.fields label{display:flex;flex-direction:column;gap:4px;font-size:.9rem;color:var(--muted)}
+.fields input{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px;font:inherit;min-width:0}
+.rules{margin:8px 0 0;padding-left:20px;color:var(--muted)}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.92em;line-height:1.15;margin:0 2px}
+.fr>span:first-child{border-bottom:1px solid currentColor;padding:0 3px}
+.fr>span:last-child{padding:0 3px}
+sub,sup{line-height:0}
+/* thanh trên */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:0 -16px;padding:10px 16px}
+.top-in{max-width:860px;margin:0 auto}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.row .sp{margin-left:auto}
+.who{font-size:.9rem;color:var(--muted)}
+.prog{height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:8px}
+.prog>i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.pal{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0 0;align-items:center}
+.pal .pl{font-size:.78rem;color:var(--muted);margin:0 4px 0 8px}
+.pal .pl:first-child{margin-left:0}
+.pal button{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font:inherit;font-size:.82rem;padding:0}
+.pal button.done{background:var(--accentbg);border-color:var(--accent)}
+.pal button.part{background:var(--midbg);border-color:var(--mid)}
+.pal button.cur{outline:2.5px solid var(--accent);outline-offset:1px}
+.pal button.ok{background:var(--okbg);border-color:var(--ok)}
+.pal button.mid{background:var(--midbg);border-color:var(--mid)}
+.pal button.no{background:var(--badbg);border-color:var(--bad)}
+/* câu hỏi */
+.qh{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px}
+.qh h2{margin:0;font-size:1.05rem;color:var(--accent)}
+.qh .pt{font-size:.85rem;color:var(--muted)}
+.qbody{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.qtext{flex:1 1 340px;min-width:0;font-size:1.02rem}
+.qfig{flex:0 1 310px;width:310px;max-width:100%}
+.qfig svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:10px}
+.opts{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
+.opt{text-align:left;border:1.5px solid var(--line);background:transparent;color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer;font:inherit;display:flex;gap:10px}
+.opt:hover:not(:disabled){border-color:var(--accent);background:var(--accentbg)}
+.opt b{color:var(--accent)}
+.opt.sel{border-color:var(--accent);background:var(--accentbg)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--okbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.st{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:9px 0;border-top:1px dashed var(--line)}
+.st:first-of-type{border-top:0}
+.st .tx{flex:1;min-width:0}
+.tf{display:flex;gap:6px;flex-shrink:0}
+.tf button{border:1.5px solid var(--line);background:transparent;color:var(--ink);padding:6px 14px;border-radius:8px;cursor:pointer;font:inherit;font-size:.92rem}
+.tf button:hover:not(:disabled){border-color:var(--accent)}
+.tf button.sel{background:var(--accentbg);border-color:var(--accent)}
+.tf button.right{border-color:var(--ok);background:var(--okbg)}
+.tf button.wrong{border-color:var(--bad);background:var(--badbg)}
+.ans{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.ans input{width:150px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:9px 12px;font:inherit;font-size:1.05rem}
+.ans .unit{color:var(--muted)}
+.exp{margin-top:14px;padding:11px 14px;border-left:3px solid var(--accent);background:var(--accentbg);border-radius:0 8px 8px 0;font-size:.95rem}
+.verdict{margin-top:12px;font-weight:600}
+.verdict.ok{color:var(--ok)}.verdict.no{color:var(--bad)}.verdict.mid{color:var(--mid)}
+table.d{border-collapse:collapse;margin:8px 0;font-size:.95rem}
+table.d td,table.d th{border:1px solid var(--line);padding:5px 12px;text-align:center}
+table.d th{background:var(--accentbg)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+/* kết quả */
+.sum h2{margin:0 0 6px;font-size:1.2rem}
+.sum .big{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}
+.sum .big div{flex:1 1 150px;background:var(--accentbg);border-radius:10px;padding:10px 14px}
+.sum .big b{display:block;font-size:1.5rem;color:var(--accent)}
+.sum .big span{font-size:.88rem;color:var(--muted)}
+.ov{position:fixed;inset:0;background:rgba(10,14,25,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.ov .card{max-width:420px;margin:0}
+/* svg */
+.g-axis{stroke:var(--ink);stroke-width:1.6;fill:none}
+.g-txt{fill:var(--ink);font-size:13px;font-family:inherit}
+.g-it{font-style:italic}
+.g-dash{stroke:var(--grid);stroke-width:1.2;stroke-dasharray:5 4;fill:none}
+.g-b{stroke:var(--blue);fill:none;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.g-r{stroke:var(--red);fill:none;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.g-bt{fill:var(--blue);font-size:13px}.g-rt{fill:var(--red);font-size:13px}
+.g-pt{fill:var(--ink)}
+@media print{.top,.nav,.btn{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <h1>Định luật Boyle và định luật Charles</h1>
+    <p>Bài tập luyện tập · Vật lí 12</p>
+  </div>
+  <button class="btn sm" id="th" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện sáng/tối">◐</button>
+</header>
+
+<section class="card" id="intro">
+  <h2 style="margin:0 0 4px;font-size:1.2rem">Trước khi làm bài</h2>
+  <div class="fields">
+    <label>Họ và tên <input id="nm" type="text" size="24" autocomplete="off"></label>
+    <label>Lớp <input id="cl" type="text" size="8" autocomplete="off"></label>
+  </div>
+  <ul class="rules">
+    <li>Bài gồm 40 câu: Phần I (20 câu trắc nghiệm), Phần II (10 câu đúng – sai, mỗi câu 4 ý), Phần III (10 câu trả lời ngắn).</li>
+    <li>Mỗi lần hiện một câu. Thứ tự câu trong từng phần được đảo ngẫu nhiên.</li>
+    <li>Có thể quay lại sửa đáp án trước khi nộp. Chỉ sau khi nộp bài mới xem được đáp án và lời giải.</li>
+    <li>Phần III: nhập số, dùng dấu phẩy hoặc dấu chấm đều được.</li>
+  </ul>
+  <p style="margin:16px 0 0"><button class="btn primary" id="go">Bắt đầu làm bài</button></p>
+</section>
+
+<div id="quiz" class="hide">
+  <div class="top"><div class="top-in">
+    <div class="row">
+      <span class="who" id="who"></span>
+      <span class="who" id="cnt"></span>
+      <span class="sp"></span>
+      <button class="btn primary sm" id="sub">Nộp bài</button>
+      <button class="btn sm hide" id="again">Làm lại (đảo đề)</button>
+    </div>
+    <div class="prog"><i id="bar"></i></div>
+    <div class="pal" id="pal"></div>
+  </div></div>
+
+  <div class="card sum hide" id="sum"></div>
+  <article class="card" id="card"></article>
+  <div class="nav">
+    <button class="btn" id="prev">← Câu trước</button>
+    <button class="btn primary" id="next">Câu sau →</button>
+  </div>
+</div>
+</div>
+
+<script>
+"use strict";
+/* ---------- định dạng văn bản toán ---------- */
+function m(s){
+  return s
+   .replace(/_\{([^}]+)\}/g,'<sub>$1</sub>')
+   .replace(/\^\{([^}]+)\}/g,'<sup>$1</sup>')
+   .replace(/_(\w)/g,'<sub>$1</sub>')
+   .replace(/\{\{([^|}]+)\|([^}]+)\}\}/g,'<span class="fr"><span>$1</span><span>$2</span></span>')
+   .replace(/\*([^*]+)\*/g,'<i>$1</i>');
+}
+const fmt=(n,d)=>{let s=(d===undefined?String(+n.toFixed(3)):n.toFixed(d));return s.replace('.',',').replace('-','−')};
+
+/* ---------- vẽ đồ thị SVG ---------- */
+let gid=0;
+function plot(S,reveal){
+  const W=360,H=290,L=(S.ml||50),R=26,T=26,B=48;
+  const [x0,x1]=S.xr,[y0,y1]=S.yr;
+  const X=x=>L+(x-x0)/(x1-x0)*(W-L-R);
+  const Y=y=>H-B-(y-y0)/(y1-y0)*(H-B-T);
+  const id='ar'+(++gid);
+  const ax=Math.max(x0,0), ay=Math.max(y0,0);   // vị trí trục
+  let o=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${S.alt||'Đồ thị'}"><defs>
+  <marker id="${id}k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--ink)"/></marker>
+  <marker id="${id}r" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--red)"/></marker></defs>`;
+  const items=S.items.filter(it=>!it.sol||reveal);
+  // đường nét đứt / dẫn xuống trục (vẽ trước)
+  items.forEach(it=>{
+    if(it.k==='guide'){
+      if(it.xt!==undefined){o+=`<line class="g-dash" x1="${X(it.x)}" y1="${Y(it.y)}" x2="${X(it.x)}" y2="${Y(ay)}"/>`;
+        o+=`<text class="g-txt" x="${X(it.x)}" y="${Y(ay)+17}" text-anchor="middle">${it.xt}</text>`}
+      if(it.yt!==undefined){o+=`<line class="g-dash" x1="${X(it.x)}" y1="${Y(it.y)}" x2="${X(ax)}" y2="${Y(it.y)}"/>`;
+        o+=`<text class="g-txt" x="${X(ax)-7}" y="${Y(it.y)+4}" text-anchor="end">${it.yt}</text>`}
+    }
+    if(it.k==='line'&&it.dash){o+=`<line class="g-dash" x1="${X(it.p[0][0])}" y1="${Y(it.p[0][1])}" x2="${X(it.p[1][0])}" y2="${Y(it.p[1][1])}"/>`}
+  });
+  // trục
+  o+=`<line class="g-axis" x1="${X(x0)-4}" y1="${Y(ay)}" x2="${W-R+10}" y2="${Y(ay)}" marker-end="url(#${id}k)"/>`;
+  o+=`<line class="g-axis" x1="${X(ax)}" y1="${Y(y0)+4}" x2="${X(ax)}" y2="${T-12}" marker-end="url(#${id}k)"/>`;
+  o+=`<text class="g-txt g-it" x="${W-R+8}" y="${Y(ay)+36}" text-anchor="end">${S.xl}</text>`;
+  o+=`<text class="g-txt g-it" x="${X(ax)+8}" y="${T-12}" text-anchor="start">${S.yl}</text>`;
+  if(S.O!==false)o+=`<text class="g-txt" x="${X(ax)-14}" y="${Y(ay)+17}" text-anchor="middle">O</text>`;
+  // đường cong, đường thẳng, mũi tên
+  items.forEach(it=>{
+    const cl=it.c==='r'?'g-r':'g-b';
+    if(it.k==='curve'){
+      let d='',on=false;const n=220;
+      for(let i=0;i<=n;i++){const x=it.a+(it.b-it.a)*i/n,y=it.f(x);
+        if(y>y1||y<y0){on=false;continue}
+        d+=(on?'L':'M')+X(x).toFixed(1)+' '+Y(y).toFixed(1)+' ';on=true}
+      o+=`<path class="${cl}" d="${d}"/>`;
+      if(it.lab)o+=`<text class="${it.c==='r'?'g-rt':'g-bt'}" x="${X(it.b)+6}" y="${Y(it.f(it.b))+4}">${it.lab}</text>`;
+    }
+    if(it.k==='line'&&!it.dash){
+      o+=`<line class="${cl}" x1="${X(it.p[0][0])}" y1="${Y(it.p[0][1])}" x2="${X(it.p[1][0])}" y2="${Y(it.p[1][1])}"/>`;
+      if(it.lab)o+=`<text class="${it.c==='r'?'g-rt':'g-bt'}" x="${X(it.p[1][0])+6}" y="${Y(it.p[1][1])+4}">${it.lab}</text>`;
+    }
+    if(it.k==='arrow'){
+      const pts=it.pts.map(p=>X(p[0]).toFixed(1)+','+Y(p[1]).toFixed(1)).join(' ');
+      o+=`<polyline points="${pts}" fill="none" stroke="var(--red)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#${id}r)"/>`;
+    }
+  });
+  // điểm và nhãn
+  items.forEach(it=>{
+    if(it.k==='pt'){
+      o+=`<circle class="g-pt" cx="${X(it.x)}" cy="${Y(it.y)}" r="4.5"/>`;
+      if(it.n)o+=`<text class="g-txt" x="${X(it.x)+(it.dx===undefined?8:it.dx)}" y="${Y(it.y)+(it.dy===undefined?-8:it.dy)}">${it.n}</text>`;
+    }
+    if(it.k==='txt')o+=`<text class="g-txt" x="${X(it.x)}" y="${Y(it.y)}" text-anchor="${it.a||'middle'}">${it.t}</text>`;
+  });
+  return o+'</svg>';
+}
+const hyp=k=>x=>k/x;
+const GR={
+ I07:{xl:'V',yl:'p',xr:[0,10],yr:[0,10],alt:'Hai đường đẳng nhiệt (1) và (2) trong hệ (V,p)',items:[
+   {k:'curve',f:hyp(5),a:.8,b:9.2,c:'b',lab:'(1)'},{k:'curve',f:hyp(10),a:1.1,b:7.2,c:'r',lab:'(2)'}]},
+ I10:{xl:'t (°C)',yl:'V',xr:[-300,150],yr:[0,22],alt:'Đồ thị (t,V) đẳng áp',items:[
+   {k:'line',dash:1,p:[[-273,0],[0,12]]},{k:'line',p:[[0,12],[135,12*(1+135/273)]]},
+   {k:'guide',x:-273,y:0,xt:'−273',sol:1},{k:'pt',x:-273,y:0,sol:1}]},
+ I12:{xl:'T',yl:'V',xr:[0,10],yr:[0,10],alt:'Hai đường đẳng áp qua gốc O',items:[
+   {k:'line',p:[[0,0],[7.8,9]],lab:'(1)'},{k:'line',p:[[0,0],[9.3,5.2]],c:'r',lab:'(2)'}]},
+ I13:{xl:'1/V',yl:'p',xr:[0,10],yr:[0,10],alt:'Hai đường đẳng nhiệt qua gốc O trong hệ (1/V,p)',items:[
+   {k:'line',p:[[0,0],[7.8,9]],lab:'(1)'},{k:'line',p:[[0,0],[9.3,5.2]],c:'r',lab:'(2)'}]},
+ I14:{xl:'T',yl:'V',xr:[0,10],yr:[0,10],alt:'Quá trình 1→2 trong hệ (T,V)',items:[
+   {k:'line',dash:1,p:[[0,0],[2.9,2.55]]},{k:'line',p:[[2.9,2.55],[8.4,7.4]]},
+   {k:'arrow',pts:[[5.3,4.66],[7.7,6.78]]},{k:'pt',x:3.4,y:3,n:'1',dx:10,dy:16},{k:'pt',x:8.1,y:7.13,n:'2',dx:-4,dy:-10}]},
+ I15:{xl:'V',yl:'p',xr:[0,10],yr:[0,10],alt:'Quá trình 1→2 trên đường hypebol',items:[
+   {k:'curve',f:hyp(20),a:2,b:9.4},
+   {k:'arrow',pts:(()=>{const a=[];for(let i=0;i<=8;i++){const v=5.2-i*.1;a.push([v,20/v])}return a})()},
+   {k:'pt',x:7,y:20/7,n:'1',dx:8,dy:-8},{k:'pt',x:3.2,y:20/3.2,n:'2',dx:8,dy:-6}]},
+ I16:{xl:'V',yl:'p',xr:[0,10],yr:[0,10],alt:'Quá trình 1→2 đẳng áp, V giảm',items:[
+   {k:'line',p:[[2.4,6],[7.6,6]]},{k:'arrow',pts:[[5.8,6],[3.6,6]]},
+   {k:'pt',x:7.6,y:6,n:'1',dx:-4,dy:-12},{k:'pt',x:2.4,y:6,n:'2',dx:-4,dy:-12}]},
+ II01:{xl:'V (lít)',yl:'p (atm)',xr:[0,9],yr:[0,9],alt:'Nhánh hypebol qua A(2;6) và B(6;2)',items:[
+   {k:'curve',f:hyp(12),a:1.4,b:8.6},
+   {k:'guide',x:2,y:6,xt:'2',yt:'6'},{k:'guide',x:6,y:2,xt:'6',yt:'2'},
+   {k:'pt',x:2,y:6,n:'A',dx:9,dy:-9},{k:'pt',x:6,y:2,n:'B',dx:8,dy:-9}]},
+ II05:{xl:'T (K)',yl:'V (lít)',xr:[0,600],yr:[0,13],ml:46,alt:'Đường thẳng qua O, (300 K; 6 lít), (450 K; 9 lít)',items:[
+   {k:'line',p:[[0,0],[575,11.5]]},
+   {k:'guide',x:300,y:6,xt:'300',yt:'6'},{k:'guide',x:450,y:9,xt:'450',yt:'9'},
+   {k:'pt',x:300,y:6},{k:'pt',x:450,y:9}]},
+ II07:{xl:'t (°C)',yl:'V (lít)',xr:[-300,150],yr:[0,22],alt:'Đồ thị (t,V) với V₀ = 12 lít',items:[
+   {k:'line',dash:1,p:[[-273,0],[0,12]]},{k:'line',p:[[0,12],[135,12*(1+135/273)]]},
+   {k:'guide',x:0,y:12,yt:'12'},{k:'pt',x:0,y:12},
+   {k:'guide',x:-273,y:0,xt:'−273',sol:1},{k:'pt',x:-273,y:0,sol:1}]},
+ II08:{xl:'1/V (lít⁻¹)',yl:'p (atm)',xr:[0,.7],yr:[0,3.3],ml:46,alt:'Đường thẳng qua O, (0,20; 1,0) và (0,50; 2,5)',items:[
+   {k:'line',p:[[0,0],[.65,3.25]]},
+   {k:'guide',x:.2,y:1,xt:'0,20',yt:'1,0'},{k:'guide',x:.5,y:2.5,xt:'0,50',yt:'2,5'},
+   {k:'pt',x:.2,y:1},{k:'pt',x:.5,y:2.5}]},
+ III02:{xl:'1/V (lít⁻¹)',yl:'p (atm)',xr:[0,.45],yr:[0,3.7],alt:'Đường thẳng qua O và (0,25; 2)',items:[
+   {k:'line',p:[[0,0],[.44,3.52]]},{k:'guide',x:.25,y:2,xt:'0,25',yt:'2'},{k:'pt',x:.25,y:2}]},
+ III06:{xl:'T (K)',yl:'V (lít)',xr:[0,350],yr:[0,9],alt:'Đường thẳng qua O và (200 K; 4 lít)',items:[
+   {k:'line',p:[[0,0],[340,6.8]]},{k:'guide',x:200,y:4,xt:'200',yt:'4'},{k:'pt',x:200,y:4}]},
+ III08:{xl:'V (lít)',yl:'p (atm)',xr:[0,8],yr:[0,4.2],alt:'Quá trình 1→2→3 trong hệ (V,p)',items:[
+   {k:'curve',f:hyp(6),a:1.55,b:7.6},
+   {k:'guide',x:6,y:1,xt:'6',yt:'1'},{k:'guide',x:2,y:3,xt:'2'},{k:'guide',x:3,y:3,xt:'3'},
+   {k:'guide',x:2,y:3,yt:'3',sol:1},
+   {k:'arrow',pts:(()=>{const a=[];for(let i=0;i<=8;i++){const v=4.3-i*.1;a.push([v,6/v])}return a})()},
+   {k:'arrow',pts:[[2.15,3],[2.75,3]]},
+   {k:'pt',x:6,y:1,n:'1',dx:8,dy:-9},{k:'pt',x:2,y:3,n:'2',dx:-4,dy:-11},{k:'pt',x:3,y:3,n:'3',dx:2,dy:-11}]},
+ III10:{xl:'t (°C)',yl:'V (lít)',xr:[-300,210],yr:[0,22],alt:'Đường thẳng qua (0 °C; 12 lít) và (91 °C; 16 lít)',items:[
+   {k:'line',dash:1,p:[[-273,0],[0,12]]},{k:'line',p:[[0,12],[140,12*(1+140/273)]]},
+   {k:'guide',x:0,y:12,yt:'12'},{k:'guide',x:91,y:16,xt:'91',yt:'16'},{k:'pt',x:0,y:12},{k:'pt',x:91,y:16},
+   {k:'guide',x:182,y:20,xt:'182',yt:'20',sol:1},{k:'pt',x:182,y:20,sol:1},
+   {k:'line',p:[[140,12*(1+140/273)],[190,12*(1+190/273)]],sol:1}]}
+};
+
+
+/* ---------- dữ liệu câu hỏi ---------- */
+const L4=['A','B','C','D'];
+const P1=[
+ {q:'Phát biểu nào sau đây đúng về định luật Boyle?',o:['Khi áp suất không đổi, thể tích tỉ lệ thuận với nhiệt độ theo thang °C.','Khi nhiệt độ không đổi, áp suất của một lượng khí xác định tỉ lệ thuận với thể tích.','Khi nhiệt độ không đổi, áp suất của một lượng khí xác định tỉ lệ nghịch với thể tích.','Khi áp suất không đổi, thể tích tỉ lệ nghịch với nhiệt độ.'],a:2,e:'Định luật Boyle: *pV* = hằng số khi *T* không đổi.'},
+ {q:'Một lượng khí xác định bị nén chậm từ thể tích *V* xuống {{V|3}} ở nhiệt độ không đổi. Phát biểu đúng là',o:['áp suất giảm 3 lần.','áp suất tăng 3 lần.','mật độ phân tử khí giảm 3 lần.','động năng tịnh tiến trung bình của phân tử tăng 3 lần.'],a:1,e:'*p*_{1}*V*_{1} = *p*_{2}*V*_{2} ⇒ *p*_{2} = {{p_{1}V|V/3}} = 3*p*_{1}.'},
+ {q:'Theo mô hình động học phân tử, khi nén đẳng nhiệt một lượng khí thì áp suất tăng vì',o:['động năng trung bình của phân tử tăng.','khối lượng mỗi phân tử tăng.','kích thước mỗi phân tử tăng.','mật độ phân tử tăng nên số va chạm của phân tử lên thành bình trong một đơn vị thời gian tăng.'],a:3,e:'Nhiệt độ không đổi nên động năng trung bình không đổi; thể tích giảm làm mật độ phân tử tăng, số va chạm lên thành bình tăng nên áp suất tăng.'},
+ {q:'Trong hệ tọa độ (*V*,*p*), đường biểu diễn quá trình đẳng nhiệt của một lượng khí xác định là',o:['đường hypebol.','đường thẳng đi qua gốc tọa độ.','đường thẳng song song với trục *Op*.','đường parabol.'],a:0,e:'*p* = {{C|V}} với *C* là hằng số nên đồ thị là hypebol.'},
+ {q:'Trong hệ tọa độ ({{1|V}},*p*), đồ thị biểu diễn quá trình đẳng nhiệt của một lượng khí xác định là',o:['đường hypebol.','đường thẳng song song với trục hoành.','đường thẳng có đường kéo dài đi qua gốc tọa độ.','đường thẳng song song với trục tung.'],a:2,e:'*p* = (*pV*)·{{1|V}}, hệ số góc là *pV* (hằng số).'},
+ {q:'Trong hệ tọa độ (*V*,*pV*) (trục hoành là *V*, trục tung là *pV*), quá trình đẳng nhiệt của một lượng khí xác định được biểu diễn bằng',o:['đường thẳng đi qua gốc tọa độ.','đường hypebol.','đường thẳng song song với trục tung.','đường thẳng song song với trục hoành.'],a:3,e:'*pV* = hằng số khi *T* không đổi.'},
+ {q:'Hình bên là đồ thị (*V*,*p*) của hai đường đẳng nhiệt (1) và (2) của cùng một lượng khí. Kết luận đúng là',g:'I07',o:['*T*_{2} > *T*_{1}.','*T*_{1} > *T*_{2}.','*T*_{1} = *T*_{2}.','không đủ dữ kiện để so sánh *T*_{1} và *T*_{2}.'],a:0,e:'Ở cùng áp suất *p*, đường (2) có *V*_{2} > *V*_{1}; theo định luật Charles, thể tích lớn hơn ứng với nhiệt độ cao hơn nên *T*_{2} > *T*_{1}.'},
+ {q:'Một lượng khí ở 27 °C được đun nóng đẳng áp đến 54 °C. Thể tích khí',o:['tăng gấp đôi.','tăng khoảng 9%.','tăng 27%.','tăng khoảng 0,9%.'],a:1,e:'*T*_{1} = 300 K, *T*_{2} = 327 K; {{V_{2}|V_{1}}} = {{T_{2}|T_{1}}} = {{327|300}} = 1,09.'},
+ {q:'Trong hệ tọa độ (*T*,*V*) với *T* là nhiệt độ tuyệt đối, quá trình đẳng áp của một lượng khí xác định được biểu diễn bằng',o:['đường hypebol.','đường thẳng song song với trục *T*.','đường thẳng có đường kéo dài đi qua gốc tọa độ.','đường thẳng song song với trục *V*.'],a:2,e:'{{V|T}} = hằng số.'},
+ {q:'Hình bên biểu diễn quá trình đẳng áp của một lượng khí trên đồ thị (*t*,*V*) với *t* tính theo °C. Đường thẳng kéo dài cắt trục *t* tại điểm',g:'I10',o:['0 °C.','100 °C.','không cắt trục *t*.','−273 °C.'],a:3,e:'*V* = *V*_{0}(1 + {{t|273}}) = 0 khi *t* = −273 °C.'},
+ {q:'Đun nóng khí trong một xilanh có pit-tông di chuyển tự do (áp suất khí không đổi), thể tích khí tăng vì',o:['các phân tử chuyển động nhanh hơn, va chạm với pit-tông mạnh hơn nên đẩy pit-tông ra xa.','số phân tử khí trong xilanh tăng.','kích thước các phân tử tăng.','khối lượng mỗi phân tử tăng.'],a:0,e:'Số phân tử, kích thước và khối lượng phân tử không đổi; nhiệt độ tăng làm phân tử chuyển động nhanh hơn, va chạm mạnh hơn nên pit-tông bị đẩy ra cho đến khi áp suất trở lại như cũ.'},
+ {q:'Hình bên là đồ thị (*T*,*V*) của hai đường đẳng áp (1) và (2) của cùng một lượng khí, đều là đường thẳng qua gốc *O*; đường (1) dốc hơn đường (2). So sánh áp suất:',g:'I12',o:['*p*_{1} > *p*_{2}.','*p*_{1} < *p*_{2}.','*p*_{1} = *p*_{2}.','không đủ dữ kiện.'],a:1,e:'Kẻ đường thẳng đứng ứng với cùng một nhiệt độ *T*: *V*_{1} > *V*_{2}. Theo định luật Boyle (cùng *T*), thể tích lớn hơn ứng với áp suất nhỏ hơn nên *p*_{1} < *p*_{2}.'},
+ {q:'Hình bên là đồ thị ({{1|V}},*p*) của hai đường đẳng nhiệt (1) và (2) của cùng một lượng khí, đều là đường thẳng qua gốc *O*; đường (1) dốc hơn đường (2). So sánh nhiệt độ:',g:'I13',o:['*T*_{1} < *T*_{2}.','*T*_{1} = *T*_{2}.','*T*_{1} > *T*_{2}.','không đủ dữ kiện.'],a:2,e:'Với cùng áp suất *p*, đường (1) có {{1|V}} nhỏ hơn nên *V*_{1} > *V*_{2}. Ở cùng áp suất, thể tích lớn hơn ứng với nhiệt độ cao hơn (định luật Charles) nên *T*_{1} > *T*_{2}. Cách khác: hệ số góc *pV* của (1) lớn hơn.'},
+ {q:'Trên đồ thị (*T*,*V*) ở hình bên, quá trình biến đổi từ trạng thái 1 sang trạng thái 2 là đoạn thẳng có đường kéo dài đi qua gốc *O*. Quá trình 1 → 2 là',g:'I14',o:['quá trình đẳng nhiệt, thể tích khí tăng.','quá trình đẳng áp, nhiệt độ tăng thì thể tích khí giảm.','quá trình đẳng nhiệt, áp suất khí giảm.','quá trình đẳng áp, nhiệt độ tăng thì thể tích khí tăng.'],a:3,e:'{{V|T}} = hằng số nên là quá trình đẳng áp; *T*_{2} > *T*_{1} nên *V*_{2} > *V*_{1}.'},
+ {q:'Trên đồ thị (*V*,*p*) ở hình bên, quá trình biến đổi từ trạng thái 1 sang trạng thái 2 là một phần của đường hypebol, *V*_{2} < *V*_{1}. Trong quá trình này',g:'I15',o:['nhiệt độ khí không đổi, áp suất khí tăng.','nhiệt độ khí không đổi, áp suất khí giảm.','nhiệt độ khí tăng, áp suất khí tăng.','áp suất khí không đổi, nhiệt độ khí giảm.'],a:0,e:'Đường hypebol là đường đẳng nhiệt: *pV* = hằng số, *V* giảm thì *p* tăng.'},
+ {q:'Trên đồ thị (*V*,*p*) ở hình bên, quá trình biến đổi từ trạng thái 1 sang trạng thái 2 là đoạn thẳng song song với trục *OV*, *V*_{2} < *V*_{1}. Trong quá trình này',g:'I16',o:['nhiệt độ khí tăng.','nhiệt độ khí giảm.','nhiệt độ khí không đổi.','áp suất khí giảm.'],a:1,e:'*p* không đổi, *V* giảm; {{V|T}} = hằng số nên *T* giảm.'},
+ {q:'Khi làm thí nghiệm kiểm chứng định luật Boyle bằng xilanh và áp kế, cần đẩy pit-tông từ từ vì',o:['để lực đẩy nhỏ hơn.','để thể tích khí không đổi.','để áp suất khí không đổi.','để nhiệt độ khí được giữ không đổi.'],a:3,e:'Đẩy từ từ để khí kịp trao đổi nhiệt với môi trường, nhờ đó nhiệt độ khí không đổi, đúng điều kiện của định luật Boyle.'},
+ {q:'Bịt kín đầu một ống tiêm chứa không khí rồi kéo pit-tông ra từ từ. Áp suất khí trong ống giảm vì',o:['số phân tử khí trong ống giảm.','nhiệt độ khí giảm mạnh.','mật độ phân tử khí giảm do thể tích tăng.','phân tử khí chuyển động chậm lại.'],a:2,e:'Số phân tử và nhiệt độ không đổi, thể tích tăng làm mật độ phân tử giảm nên số va chạm lên thành ống giảm.'},
+ {q:'Một bọt khí nổi từ đáy hồ lên mặt nước, coi nhiệt độ không đổi. Khi lên gần mặt nước, thể tích bọt khí',o:['tăng vì áp suất của nước xung quanh giảm nên áp suất khí trong bọt giảm.','giảm vì áp suất khí trong bọt tăng.','không đổi vì lượng khí không đổi.','tăng vì nhiệt độ khí tăng.'],a:0,e:'*p*_{1}*V*_{1} = *p*_{2}*V*_{2}: *p* giảm thì *V* tăng.'},
+ {q:'Một quả bóng bay (áp suất khí trong bóng coi như bằng áp suất khí quyển, không đổi) được đưa từ phòng lạnh ra ngoài trời nắng nóng thì phồng to hơn. Giải thích hợp lí nhất là:',o:['lượng khí trong bóng tăng lên.','khi áp suất không đổi thì {{V|T}} = hằng số (*T* là nhiệt độ tuyệt đối), nên *T* tăng thì *V* tăng.','khi áp suất không đổi thì *VT* = hằng số, nên *T* tăng thì *V* giảm.','áp suất khí trong bóng giảm nên theo định luật Boyle thể tích tăng.'],a:1,e:'{{V_{1}|T_{1}}} = {{V_{2}|T_{2}}} khi *p* không đổi.'}
+];
+const T=true,F=false;
+const P2=[
+ {q:'Hình bên là đồ thị (*V*,*p*) của một lượng khí xác định ở nhiệt độ không đổi; đồ thị là một nhánh hypebol đi qua điểm A (2 lít; 6 atm) và điểm B (6 lít; 2 atm).',g:'II01',s:['Đồ thị cho thấy áp suất tỉ lệ nghịch với thể tích.','Tích *pV* tại A bằng tích *pV* tại B.','Từ A sang B khí bị nén.','Từ A sang B, mật độ phân tử khí tăng.'],a:[T,T,F,F],e:'*p*_{A}*V*_{A} = 6·2 = 12 atm·lít = *p*_{B}*V*_{B} = 2·6. Từ A đến B, *V* tăng từ 2 lít lên 6 lít nên khí dãn nở, mật độ phân tử giảm (c, d sai).'},
+ {q:'Một lượng khí xác định biến đổi đẳng nhiệt. Hình bên là đồ thị *p* theo {{1|V}}, đường (1) và (2) ứng với hai nhiệt độ *T*_{1}, *T*_{2} khác nhau; đường (1) dốc hơn đường (2).',g:'I13',s:['Mỗi đồ thị là đường thẳng có đường kéo dài đi qua gốc tọa độ.','Hệ số góc của mỗi đường thẳng bằng tích *pV*.','Đường (1) dốc hơn đường (2) nên *T*_{1} < *T*_{2}.','Khi *V* tăng 4 lần thì hoành độ {{1|V}} của điểm biểu diễn giảm 4 lần.'],a:[T,T,F,T],e:'*p* = (*pV*)·{{1|V}} nên hệ số góc bằng *pV*. Với cùng *p*, đường (1) có *V*_{1} > *V*_{2} nên theo định luật Charles *T*_{1} > *T*_{2} (c sai).'},
+ {q:'Hình bên là đồ thị (*V*,*p*) của hai đường đẳng nhiệt (1) và (2) của cùng một lượng khí; ở cùng một giá trị *V*, đường (2) có *p* lớn hơn.',g:'I07',s:['*T*_{2} > *T*_{1}.','Ở cùng một áp suất, thể tích khí ở đường (2) lớn hơn ở đường (1).','Tích *pV* ở đường (2) nhỏ hơn tích *pV* ở đường (1).','Để đưa khí từ đường (1) sang đường (2) cần làm lạnh khí.'],a:[T,T,F,F],e:'Ở cùng *p* thì *V*_{2} > *V*_{1} nên theo định luật Charles *T*_{2} > *T*_{1}. Tích *pV* ở đường (2) lớn hơn ở đường (1) (c sai). Từ (1) sang (2) phải làm nóng khí (d sai).'},
+ {q:'Một nhóm học sinh nén khí trong xilanh ở nhiệt độ không đổi và thu được bảng số liệu sau:',tbl:{V:[20,16,10,8],p:[100,125,200,250]},s:['Khi thể tích giảm thì áp suất tăng.','Tích *pV* xấp xỉ không đổi, bằng 2000 kPa·ml.','Đồ thị *p* theo *V* là một đường thẳng.','Khi *V* = 5 ml thì *p* = 400 kPa.'],a:[T,T,F,T],e:'*pV*: 100·20 = 125·16 = 200·10 = 250·8 = 2000 kPa·ml. Đồ thị *p* theo *V* là hypebol (c sai). Với *V* = 5 ml: *p* = {{2000|5}} = 400 kPa.'},
+ {q:'Hình bên là đồ thị (*T*,*V*) của một lượng khí xác định: đường thẳng có đường kéo dài đi qua gốc *O* và qua hai điểm (300 K; 6 lít), (450 K; 9 lít).',g:'II05',s:['Quá trình biến đổi là quá trình đẳng áp.','Tỉ số {{V|T}} không đổi và bằng 0,02 lít/K.','Khi nhiệt độ tăng thêm 150 K thì thể tích tăng 50%.','Ở 600 K thể tích khí là 18 lít.'],a:[T,T,T,F],e:'{{V|T}} = {{6|300}} = {{9|450}} = 0,02 lít/K. Từ 300 K lên 450 K: {{ΔV|V}} = {{3|6}} = 50%. Ở 600 K: *V* = 0,02·600 = 12 lít (d sai).'},
+ {q:'Hình bên là đồ thị (*T*,*V*) của hai đường đẳng áp (1) và (2) của cùng một lượng khí, cùng đi qua gốc *O*; đường (1) dốc hơn đường (2).',g:'I12',s:['*p*_{1} < *p*_{2}.','Ở cùng một nhiệt độ, *V*_{1} > *V*_{2}.','Cả hai đường khi kéo dài đều đi qua gốc tọa độ.','Nếu giữ nguyên lượng khí nhưng tăng áp suất thì độ dốc của đường thẳng tăng.'],a:[T,T,T,F],e:'Kẻ đường thẳng đứng ứng với cùng một *T*: *V*_{1} > *V*_{2}, theo định luật Boyle thì *p*_{1} < *p*_{2}. Nếu tăng áp suất thì ở cùng *T* thể tích giảm, độ dốc {{V|T}} giảm (d sai).'},
+ {q:'Hình bên là đồ thị (*t*,*V*) với *t* tính theo °C của một lượng khí trong quá trình đẳng áp; thể tích khí là 12 lít khi *t* = 0 °C.',g:'II07',s:['Đường thẳng kéo dài cắt trục hoành tại điểm −273 °C.','Thể tích *V* tỉ lệ thuận với nhiệt độ *t* (°C).','Mỗi khi nhiệt độ tăng thêm 1 °C, thể tích tăng thêm {{1|273}} thể tích khí ở 0 °C.','Ở 273 °C, thể tích khí gấp đôi thể tích ở 0 °C.'],a:[T,F,T,T],e:'*V* = *V*_{0}(1 + {{t|273}}) với *V*_{0} = 12 lít: *V* là hàm bậc nhất của *t* chứ không tỉ lệ thuận (b sai); *V* = 0 khi *t* = −273 °C; ở 273 °C, *V* = 2*V*_{0} = 24 lít.'},
+ {q:'Hình bên là đồ thị ({{1|V}},*p*) của một lượng khí xác định: đoạn thẳng đi qua hai điểm (0,20 lít⁻¹; 1,0 atm) và (0,50 lít⁻¹; 2,5 atm).',g:'II08',s:['Quá trình biến đổi là quá trình đẳng nhiệt.','Tích *pV* không đổi và bằng 5 atm·lít.','Khi thể tích giảm xuống còn 1 lít thì áp suất là 5 atm.','Đường thẳng kéo dài cắt trục *p* tại điểm *p* = 1 atm.'],a:[T,T,T,F],e:'*pV* = {{p|1/V}} = {{1,0|0,20}} = {{2,5|0,50}} = 5 atm·lít. Với *V* = 1 lít: *p* = {{5|1}} = 5 atm. Đường thẳng đi qua gốc *O* nên không cắt trục *p* tại 1 atm (d sai).'},
+ {q:'Một lượng khí ở trạng thái 1: *p*_{1} = 1 atm, *V*_{1} = 6 lít, *T*_{1} = 300 K. Khí biến đổi đẳng nhiệt sang trạng thái 2 có *p*_{2} = 3 atm, rồi biến đổi đẳng áp sang trạng thái 3 có *V*_{3} = 4 lít.',s:['Ở trạng thái 2, *V*_{2} = 2 lít.','Trong quá trình 2 → 3 khí nóng lên.','*T*_{3} = 600 K.','Trạng thái 3 nằm trên cùng đường đẳng nhiệt với trạng thái 1.'],a:[T,T,T,F],e:'*V*_{2} = {{1·6|3}} = 2 lít, *T*_{2} = 300 K. Quá trình 2 → 3 (*p* không đổi): *T*_{3} = 300·{{4|2}} = 600 K. Ở trạng thái 3: *p*_{3}*V*_{3} = 3·4 = 12 ≠ *p*_{1}*V*_{1} = 6 nên d sai.'},
+ {q:'Một bọt khí có thể tích 1 cm³ ở đáy hồ, nơi áp suất là 3 atm. Bọt khí nổi lên mặt hồ (áp suất 1 atm). Coi nhiệt độ không đổi và lượng khí trong bọt không đổi.',s:['Thể tích bọt khí khi lên mặt nước là 3 cm³.','Số phân tử khí trong bọt tăng lên.','Mật độ phân tử khí trong bọt giảm 3 lần.','Quá trình này được biểu diễn trên đồ thị (*V*,*p*) bằng một phần của đường hypebol.'],a:[T,F,T,T],e:'*V*_{2} = {{3·1|1}} = 3 cm³. Số phân tử không đổi (b sai), thể tích tăng 3 lần nên mật độ giảm 3 lần.'}
+];
+const P3=[
+ {q:'Một lượng khí có thể tích 8 lít, áp suất 1,5 atm được nén đẳng nhiệt đến thể tích 3 lít. Tính áp suất của khí sau khi nén (đơn vị: atm).',a:4,u:'atm',e:'*p*_{2} = {{p_{1}V_{1}|V_{2}}} = {{1,5·8|3}} = 4 atm.'},
+ {q:'Hình bên là đồ thị *p* theo {{1|V}} của một lượng khí xác định ở nhiệt độ không đổi: đường thẳng đi qua gốc tọa độ *O* và điểm (0,25 lít⁻¹; 2 atm). Tính áp suất của khí khi thể tích là 1,6 lít (đơn vị: atm).',g:'III02',a:5,u:'atm',e:'Hệ số góc *k* = *pV* = {{2|0,25}} = 8 atm·lít; *p* = {{k|V}} = {{8|1,6}} = 5 atm.'},
+ {q:'Một ống thủy tinh tiết diện đều, đặt thẳng đứng, đầu dưới kín, đầu trên hở, chứa một cột không khí dài 20 cm bị giam bởi cột thủy ngân dài 10 cm. Áp suất khí quyển là 76 cmHg. Lật ngược ống (đầu hở hướng xuống, ống đủ dài để thủy ngân không chảy ra ngoài), giữ nhiệt độ không đổi. Tính chiều dài cột không khí lúc sau (đơn vị: cm, làm tròn đến chữ số thập phân thứ nhất).',a:26.1,u:'cm',e:'*p*_{1} = *p*_{0} + *h* = 76 + 10 = 86 cmHg; *p*_{2} = *p*_{0} − *h* = 76 − 10 = 66 cmHg. *p*_{1}ℓ_{1} = *p*_{2}ℓ_{2} ⇒ ℓ_{2} = {{86·20|66}} ≈ 26,1 cm.'},
+ {q:'Săm xe đạp có thể tích 2 lít, ban đầu chứa không khí ở áp suất 1 atm. Mỗi lần bơm đẩy vào săm 100 cm³ không khí ở áp suất 1 atm. Coi nhiệt độ và thể tích săm không đổi. Tính áp suất khí trong săm sau 30 lần bơm (đơn vị: atm).',a:2.5,u:'atm',e:'Quy toàn bộ khí về áp suất 1 atm: *V*_{tổng} = 2000 + 30·100 = 5000 cm³. *p*_{0}*V*_{tổng} = *pV* ⇒ *p* = {{1·5000|2000}} = 2,5 atm.'},
+ {q:'Một khối khí ở 27 °C có thể tích 3 lít được nung nóng đẳng áp đến 177 °C. Tính thể tích khí sau khi nung (đơn vị: lít).',a:4.5,u:'lít',e:'*T*_{1} = 300 K, *T*_{2} = 450 K; {{V_{1}|T_{1}}} = {{V_{2}|T_{2}}} ⇒ *V*_{2} = 3·{{450|300}} = 4,5 lít.'},
+ {q:'Hình bên là đồ thị (*T*,*V*) của một lượng khí xác định: đường thẳng đi qua gốc tọa độ *O* và điểm (200 K; 4 lít). Khí ở nhiệt độ bao nhiêu °C thì có thể tích 10 lít? (đơn vị: °C)',g:'III06',a:227,u:'°C',e:'{{V|T}} = {{4|200}} = 0,02 lít/K ⇒ *T* = {{10|0,02}} = 500 K ⇒ *t* = 500 − 273 = 227 °C.'},
+ {q:'Một khối khí ở 0 °C có thể tích 5 lít được đun nóng đẳng áp đến khi thể tích là 7,5 lít. Tính nhiệt độ của khí lúc này (đơn vị: °C, làm tròn đến chữ số thập phân thứ nhất).',a:136.5,u:'°C',e:'*T*_{1} = 273 K; {{V_{1}|T_{1}}} = {{V_{2}|T_{2}}} ⇒ *T*_{2} = 273·{{7,5|5}} = 409,5 K ⇒ *t*_{2} = 409,5 − 273 = 136,5 °C.'},
+ {q:'Một lượng khí biến đổi từ trạng thái 1 (*p*_{1} = 1 atm; *V*_{1} = 6 lít; *T*_{1} = 300 K) đến trạng thái 2 theo quá trình đẳng nhiệt (*V*_{2} = 2 lít), rồi đến trạng thái 3 theo quá trình đẳng áp (*V*_{3} = 3 lít), như đồ thị (*V*,*p*) ở hình bên. Tính nhiệt độ *T*_{3} (đơn vị: K).',g:'III08',a:450,u:'K',e:'1 → 2 (đẳng nhiệt): *T*_{2} = *T*_{1} = 300 K. 2 → 3 (đẳng áp): {{V_{2}|T_{2}}} = {{V_{3}|T_{3}}} ⇒ *T*_{3} = 300·{{3|2}} = 450 K.'},
+ {q:'Một lượng khí ở trạng thái 1: *p*_{1} = 1 atm, *V*_{1} = 12 lít, *T*_{1} = 300 K. Khí biến đổi đẳng áp sang trạng thái 2 có *T*_{2} = 450 K, rồi biến đổi đẳng nhiệt sang trạng thái 3 có *p*_{3} = 3 atm. Tính *V*_{3} (đơn vị: lít).',a:6,u:'lít',e:'1 → 2: *V*_{2} = *V*_{1}·{{T_{2}|T_{1}}} = 12·{{450|300}} = 18 lít. 2 → 3: *p*_{2}*V*_{2} = *p*_{3}*V*_{3} ⇒ *V*_{3} = {{1·18|3}} = 6 lít.'},
+ {q:'Hình bên là đồ thị (*t*,*V*) của một lượng khí trong quá trình đẳng áp: đường thẳng đi qua hai điểm (0 °C; 12 lít) và (91 °C; 16 lít). Tính nhiệt độ (°C) khi thể tích khí là 20 lít.',g:'III10',a:182,u:'°C',e:'*V* = *V*_{0}(1 + {{t|273}}) với *V*_{0} = 12 lít (kiểm tra: 12·(1 + {{91|273}}) = 16 lít). 20 = 12(1 + {{t|273}}) ⇒ *t* = 273·{{2|3}} = 182 °C.'}
+];
+
+
+/* ================= LOGIC LÀM BÀI ================= */
+const $=id=>document.getElementById(id);
+const PN={1:'Phần I · Trắc nghiệm nhiều lựa chọn',2:'Phần II · Trắc nghiệm đúng – sai',3:'Phần III · Trả lời ngắn'};
+const PS={1:'I',2:'II',3:'III'};
+let Q=[],A=[],cur=0,submitted=false;
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function setup(){
+  Q=[];
+  [[1,P1],[2,P2],[3,P3]].forEach(([p,arr])=>{
+    shuffle(arr.map((_,i)=>i)).forEach((oi,k)=>Q.push({p,d:arr[oi],n:k+1,tot:arr.length}));
+  });
+  A=Q.map(q=>q.p===1?null:q.p===2?{}:'');
+  cur=0;submitted=false;
+}
+function status(i){           // 0 chưa làm, 1 làm một phần, 2 đã làm
+  const q=Q[i],a=A[i];
+  if(q.p===1)return a===null?0:2;
+  if(q.p===2){const n=Object.keys(a).length;return n===0?0:n===4?2:1}
+  return a.trim()===''?0:2;
+}
+function parse3(s){const r=s.trim().replace(',','.').replace('−','-');return r===''||isNaN(+r)?null:+r}
+function grade(i){            // {got,tot}
+  const q=Q[i],a=A[i],d=q.d;
+  if(q.p===1)return{got:a===d.a?1:0,tot:1};
+  if(q.p===2){let g=0;for(let j=0;j<4;j++)if(a[j]!==undefined&&a[j]===d.a[j])g++;return{got:g,tot:4}}
+  const v=parse3(a);return{got:v!==null&&Math.abs(v-d.a)<=0.06?1:0,tot:1};
+}
+function figHTML(d){return d.g?`<div class="qfig">${plot(GR[d.g],submitted)}</div>`:''}
+
+function renderPal(){
+  let h='',last=0;
+  Q.forEach((q,i)=>{
+    if(q.p!==last){last=q.p;h+=`<span class="pl">${PS[q.p]}</span>`}
+    let c='';
+    if(submitted){const g=grade(i);c=g.got===g.tot?'ok':g.got===0?'no':'mid'}
+    else{const s=status(i);c=s===2?'done':s===1?'part':''}
+    if(i===cur)c+=' cur';
+    h+=`<button class="${c}" data-i="${i}" aria-label="Câu ${q.n} phần ${PS[q.p]}">${q.n}</button>`;
+  });
+  $('pal').innerHTML=h;
+  const done=Q.filter((_,i)=>status(i)===2).length;
+  $('cnt').textContent=submitted?'Đã nộp bài':`Đã trả lời ${done}/${Q.length}`;
+  $('bar').style.width=((submitted?Q.length:done)/Q.length*100)+'%';
+}
+
+function render(){
+  const q=Q[cur],d=q.d,a=A[cur];
+  let h=`<div class="qh"><h2>Câu ${q.n}<span style="font-weight:400;color:var(--muted)"> / ${q.tot}</span></h2><span class="pt">${PN[q.p]}</span></div>`;
+  let body='';
+  if(q.p===1){
+    body=`<div>${m(d.q)}</div><div class="opts">${d.o.map((t,j)=>{
+      let c='opt';
+      if(submitted){if(j===d.a)c+=' right';else if(j===a)c+=' wrong'}
+      else if(j===a)c+=' sel';
+      return `<button class="${c}" data-j="${j}" ${submitted?'disabled':''}><b>${L4[j]}.</b><span>${m(t)}</span></button>`}).join('')}</div>`;
+  }else if(q.p===2){
+    const tb=d.tbl?`<table class="d"><tr><th><i>V</i> (ml)</th>${d.tbl.V.map(v=>`<td>${v}</td>`).join('')}</tr><tr><th><i>p</i> (kPa)</th>${d.tbl.p.map(v=>`<td>${v}</td>`).join('')}</tr></table>`:'';
+    body=`<div>${m(d.q)}</div>${tb}<div style="margin-top:6px">${d.s.map((t,j)=>{
+      const b=(v)=>{let c='';
+        if(submitted){if(d.a[j]===v)c='right';else if(a[j]===v)c='wrong'}
+        else if(a[j]===v)c='sel';
+        return `<button class="${c}" data-j="${j}" data-v="${v?1:0}" ${submitted?'disabled':''}>${v?'Đúng':'Sai'}</button>`};
+      return `<div class="st"><div class="tx"><b>${'abcd'[j]})</b> ${m(t)}</div><div class="tf">${b(true)}${b(false)}</div></div>`}).join('')}</div>`;
+  }else{
+    body=`<div>${m(d.q)}</div><div class="ans"><input id="in3" inputmode="decimal" autocomplete="off" aria-label="Đáp số" placeholder="Đáp số" value="${a.replace(/"/g,'')}" ${submitted?'disabled':''}><span class="unit">${d.u}</span></div>`;
+  }
+  if(submitted){
+    const g=grade(cur);let v='';
+    if(q.p===1)v=g.got?['ok','✓ Chính xác']:['no',a===null?'✗ Chưa trả lời — đáp án đúng là '+L4[d.a]:'✗ Chưa đúng — đáp án đúng là '+L4[d.a]];
+    else if(q.p===2)v=[g.got===4?'ok':g.got===0?'no':'mid',`Đúng ${g.got}/4 ý · Đáp án: ${d.a.map((x,j)=>'abcd'[j]+') '+(x?'Đ':'S')).join(' · ')}`];
+    else v=[g.got?'ok':'no',(g.got?'✓ Chính xác':'✗ Chưa đúng')+` — đáp án: ${String(d.a).replace('.',',')} ${d.u}`];
+    body+=`<div class="verdict ${v[0]}">${v[1]}</div><div class="exp">${m(d.e)}</div>`;
+  }
+  h+=`<div class="qbody"><div class="qtext">${body}</div>${figHTML(d)}</div>`;
+  $('card').innerHTML=h;
+  $('prev').disabled=cur===0;$('next').disabled=cur===Q.length-1;
+  renderPal();
+  // sự kiện
+  const card=$('card');
+  if(!submitted){
+    if(q.p===1)card.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{A[cur]=+b.dataset.j;render()});
+    if(q.p===2)card.querySelectorAll('.tf button').forEach(b=>b.onclick=()=>{
+      const j=+b.dataset.j,v=b.dataset.v==='1';
+      if(A[cur][j]===v)delete A[cur][j];else A[cur][j]=v;   // bấm lại để bỏ chọn
+      render()});
+    if(q.p===3){const inp=$('in3');
+      inp.oninput=()=>{A[cur]=inp.value;renderPal()};
+      inp.onkeydown=e=>{if(e.key==='Enter'&&cur<Q.length-1)go(cur+1)};}
+  }
+}
+function go(i){cur=Math.max(0,Math.min(Q.length-1,i));render();window.scrollTo({top:0,behavior:'smooth'})}
+
+
+// DÁN URL WEB APP APPS SCRIPT VÀO DÒNG DƯỚI SAU KHI TRIỂN KHAI
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJp7qbwAnl2k-v5Mn2uvyENqfbAbFcsklLVI031QwOBzGVuqqliOKTmm-QEUjHAe5o/exec";
+
+function sendScoreToGoogleSheets(payload){
+  if(!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("DAN_URL_WEB_APP")){
+    console.warn("Chưa cấu hình URL Apps Script; điểm chưa được gửi lên Google Sheets.");
+    return;
+  }
+  // text/plain tránh yêu cầu CORS preflight khi gửi từ trang HTML
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {"Content-Type": "text/plain;charset=utf-8"},
+    body: JSON.stringify(payload)
+  }).then(() => {
+    const msg = document.getElementById("sendStatus");
+    if(msg) msg.textContent = "Đã gửi yêu cầu lưu điểm lên Google Sheets.";
+  }).catch(err => {
+    console.error("Không gửi được điểm:", err);
+    const msg = document.getElementById("sendStatus");
+    if(msg) msg.textContent = "Chưa gửi được điểm. Vui lòng báo giáo viên.";
+  });
+}
+
+function submit(){
+  submitted=true;
+  const t={1:[0,0],2:[0,0],3:[0,0]};
+  Q.forEach((q,i)=>{const g=grade(i);t[q.p][0]+=g.got;t[q.p][1]+=g.tot});
+  const nm=$('nm').value.trim(),cl=$('cl').value.trim();
+  $('sum').innerHTML=`<h2>Kết quả${nm?' của '+nm.replace(/</g,'&lt;'):''}${cl?' · lớp '+cl.replace(/</g,'&lt;'):''}</h2>
+   <div class="big"><div><b>${t[1][0]}/${t[1][1]}</b><span>Phần I · Trắc nghiệm</span></div><div><b>${t[2][0]}/${t[2][1]}</b><span>Phần II · số ý đúng</span></div><div><b>${t[3][0]}/${t[3][1]}</b><span>Phần III · Trả lời ngắn</span></div></div>
+   <p style="margin:0;color:var(--muted);font-size:.92rem">Ô số trên thanh phía trên: xanh là đúng hoàn toàn, vàng là đúng một phần, đỏ là sai hoặc bỏ trống. Chọn từng câu để xem đáp án và lời giải.</p>`;
+  $('sum').classList.remove('hide');
+  // Gửi điểm tổng hợp lên Google Sheets
+  const totalGot = t[1][0] + t[2][0] + t[3][0];
+  const totalMax = t[1][1] + t[2][1] + t[3][1];
+  const scorePayload = {
+    name: nm,
+    className: cl,
+    part1: t[1][0] + "/" + t[1][1],
+    part2: t[2][0] + "/" + t[2][1],
+    part3: t[3][0] + "/" + t[3][1],
+    totalCorrect: totalGot,
+    totalMax: totalMax,
+    score10: Math.round((totalGot / totalMax * 10) * 100) / 100,
+    submittedAt: new Date().toISOString(),
+    quizTitle: "Định luật Boyle và định luật Charles - Vật lí 12"
+  };
+  let sendStatus = document.getElementById("sendStatus");
+  if (!sendStatus) {
+    sendStatus = document.createElement("p");
+    sendStatus.id = "sendStatus";
+    sendStatus.style.cssText = "margin:8px 0;color:var(--muted);font-size:.92rem";
+    $('sum').appendChild(sendStatus);
+  }
+  sendStatus.textContent = "Đang gửi điểm lên Google Sheets...";
+  sendScoreToGoogleSheets(scorePayload);
+  $('sub').classList.add('hide');$('again').classList.remove('hide');
+  // nhảy tới câu sai/chưa đúng đầu tiên nếu có
+  const f=Q.findIndex((_,i)=>{const g=grade(i);return g.got<g.tot});
+  cur=f>=0?f:0;render();window.scrollTo({top:0,behavior:'smooth'});
+}
+function confirmSubmit(){
+  const left=Q.filter((_,i)=>status(i)!==2).length;
+  const ov=document.createElement('div');ov.className='ov';
+  ov.innerHTML=`<div class="card" role="dialog" aria-modal="true"><h2 style="margin:0 0 6px;font-size:1.1rem">Nộp bài?</h2>
+   <p style="margin:0 0 14px">${left?`Còn <b>${left}</b> câu chưa trả lời đầy đủ. `:'Bạn đã trả lời đủ 40 câu. '}Sau khi nộp sẽ không sửa được đáp án nữa.</p>
+   <div class="row" style="justify-content:flex-end"><button class="btn" id="c0">Quay lại làm tiếp</button><button class="btn primary" id="c1">Nộp bài</button></div></div>`;
+  document.body.appendChild(ov);
+  $('c0').onclick=()=>ov.remove();
+  $('c1').onclick=()=>{ov.remove();submit()};
+  $('c1').focus();
+}
+function begin(){
+  setup();
+  $('sum').classList.add('hide');$('sub').classList.remove('hide');$('again').classList.add('hide');
+  const nm=$('nm').value.trim(),cl=$('cl').value.trim();
+  $('who').textContent=[nm,cl&&('Lớp '+cl)].filter(Boolean).join(' · ')||'Thí sinh';
+  $('intro').classList.add('hide');$('quiz').classList.remove('hide');
+  render();window.scrollTo({top:0});
+}
+$('go').onclick=begin;
+$('again').onclick=()=>{ $('quiz').classList.add('hide');$('intro').classList.remove('hide');window.scrollTo({top:0}) };
+$('sub').onclick=confirmSubmit;
+$('prev').onclick=()=>go(cur-1);$('next').onclick=()=>go(cur+1);
+$('pal').onclick=e=>{const b=e.target.closest('button');if(b)go(+b.dataset.i)};
+document.addEventListener('keydown',e=>{
+  if($('quiz').classList.contains('hide')||document.querySelector('.ov'))return;
+  if(e.target.tagName==='INPUT')return;
+  if(e.key==='ArrowRight')go(cur+1);if(e.key==='ArrowLeft')go(cur-1);
+});
+$('th').onclick=()=>{
+  const r=document.documentElement,c=r.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  r.dataset.theme=c==='dark'?'light':'dark';
+};
+</script>
+</body>
+</html>
